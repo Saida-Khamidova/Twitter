@@ -33,9 +33,12 @@ class HomeTableViewController: UITableViewController {
         }, failure: { (Error) in
             print("Could not retrieve tweets.")
         })
-        
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        loadTweet()
+    }
     
     func loadMoreTweets() {
         let myUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json"
@@ -86,14 +89,21 @@ class HomeTableViewController: UITableViewController {
         if let imageData = data {
             cell.profileImageView.image = UIImage(data: imageData)
         }
+        
+        cell.setFavorite(tweetArray[indexPath.row]["favorited"] as! Bool)
+        cell.tweetId = tweetArray[indexPath.row]["id"] as! Int
+        cell.setRetweeted(tweetArray[indexPath.row]["retweeted"] as! Bool)
         return cell
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadTweet()
         myRefreshControl.addTarget(self, action: #selector(loadTweet), for: .valueChanged)
         tableView.refreshControl = myRefreshControl
+        self.tableView.refreshControl = myRefreshControl
+        self.tableView.rowHeight = UITableView.automaticDimension
+        self.tableView.estimatedRowHeight = 150
+        
     }
 
     // MARK: - Table view data source
